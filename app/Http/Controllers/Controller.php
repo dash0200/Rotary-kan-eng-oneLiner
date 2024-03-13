@@ -16,6 +16,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
 use LDAP\Result;
 
 class Controller extends BaseController
@@ -141,7 +142,7 @@ class Controller extends BaseController
         
         $studentCounts = CreateClass::whereIn("standard", $standards)
             ->where("year", $yearId)
-            ->select("standard", \DB::raw("COUNT(*) as count"))
+            ->select("standard", DB::raw("COUNT(*) as count"))
             ->groupBy("standard")
             ->pluck("count", "standard")
             ->toArray();
@@ -666,8 +667,8 @@ class Controller extends BaseController
         return redirect()->back();
     }
 
-public function checkReg(Request $req){
-        $exist = AdmissionModel::where('sts', $req->sts)->first();
+    public function checkReg(Request $req){
+        $exist = AdmissionModel::where('reg', $req->sts)->first();
 
         if($exist){
             return response()->json(['status'=>200, 'info' => $exist->name.' '.$exist->fname.' '.$exist->lname]);

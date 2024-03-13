@@ -84,8 +84,8 @@ class TransactionController extends Controller
 
         $subcast = SubcastModel::select('id', 'name')->where('caste', $req->cast)->get();
 
-        foreach ($cats as $cat) {
-            $cat['category'] = $cat->category->name;
+        foreach ($cats as $d) {
+            $d['category'] = $d->category->name;
         }
         return response()->json(['cats' => $cats, 'subcasts' => $subcast]);
     }
@@ -99,34 +99,33 @@ class TransactionController extends Controller
         // ]);
 
         $data = [
+            "reg" => $req->reg,
             "date_of_adm" => $req->admDate,
             "year" => $req->ac_year,
             "caste" => $req->caste,
             "sub_caste" => $req->subc,
             "category" => $req->cat,
             "class" => $req->class,
-            "sts" => $req->sts,
-            "name" => $req->fname,
-            "fname" => $req->father,
-            "mname" => $req->mname,
-            "lname" => $req->surname,
-            "address" => $req->address,
-            "city" => $req->city,
+            "sts" => strtolower($req->sts),
+            "name" => strtolower($req->fname),
+            "fname" => strtolower($req->father),
+            "mname" => strtolower($req->mname),
+            "lname" => strtolower($req->surname),
+            "address" => strtolower($req->address),
+            "city" => strtolower($req->city),
             "phone" => $req->phone,
             "mobile" => $req->mobile,
             "dob" => $req->dob,
-            "birth_place" => $req->birthPlace,
+            "birth_place" => strtolower($req->birthPlace),
             "sub_district" => $req->taluk,
-            "religion" => $req->religion,
+            "religion" => strtolower($req->religion),
             "nationality" => $req->nationality,
             "gender" => $req->gender,
             "handicap" => $req->handicap,
-            "prev_school" => $req->prevSchool,
+            "prev_school" => strtolower($req->prevSchool),
         ];
         if(isset($req->id)) {
-            $admission = AdmissionModel::find($req->id);
-            $admission->fill($data);
-            $admission->save();
+            AdmissionModel::where("id", $req->id)->update($data);
         } else {
             AdmissionModel::create($data);
         }
@@ -296,7 +295,7 @@ class TransactionController extends Controller
     //*********************Leaving Certificate***************************************************************************************************************************************************************************
 
     public function getStuddent(Request $req) {
-        
+       
         $student = AdmissionModel::where('id', $req->id)->first();
         $student['c'] = $student->classes;
         $student['year'] = $student->acaYear;
@@ -313,10 +312,7 @@ class TransactionController extends Controller
             $standard["std"] = '';
             $standard['yr'] = '';
         }
-
-        $standard["std"]  = $standard !== null ? $standard->standardClass : '';
-        $standard['yr'] = $standard !== null ? $standard->acaYear : '';
-
+       
         return response()->json([$student, $standard, $qualify]);
     }
 
@@ -341,7 +337,7 @@ class TransactionController extends Controller
         foreach ($students as $std) {
             $student[] = array(
                 'id' => $std->id,
-                'text' => $std->id . "-" . $std->sts . ", " . $std->name . " " . $std->fname . " " . $std->lname . ", (" . $std->date_of_adm->format("d-m-Y") . ")"
+                'text' => $std->id . "-" . $std->sts . ", " . $std->name . ", " . $std->fname . ", " . $std->lname . ", (" . $std->date_of_adm->format("d-m-Y") . ")"
             );
         }
         return response()->json($student);
@@ -575,18 +571,4 @@ class TransactionController extends Controller
         $stds = AdmissionModel::where("date_of_adm", "LIKE", '%'.'2022'.'%')->where('class', 2)->get();
         dd($stds);
     }
-
-    public function getByNameLnameDob(Request $req) {
-
-        $stds = AdmissionModel::withTrashed()->where("name",  'LIKE', '%'.$req->name.'%')
-        ->where("lname",  'LIKE', '%'.$req->lname.'%')
-        ->where("dob",  'LIKE', '%'.$req->dob.'%')
-        ->limit(10)->get();
-        foreach($stds as $std) {
-            $std['dob1'] = $std["dob"]->format("d-m-Y");
-            $std['exist'] = LCModel::where("student", $std->id)->first();
-            $std['exist'] = $std['exist'] == null ? "" : 1;
-        }
-        return response()->json($stds);        
-} 
 }

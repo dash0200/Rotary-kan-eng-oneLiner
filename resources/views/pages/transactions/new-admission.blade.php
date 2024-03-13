@@ -17,12 +17,20 @@
         @csrf
         <div class="flex flex-col justify-around">
             <div class="flex justify-around">
-                <div class="m-2 w-full">
+                <!-- <div class="m-2 w-full">
                     <x-label value="STS" />
-                    <x-input type="text" autofocus name="sts" id='reg' oninput='checkReg()' placeholder="SST" />
+                    <x-input type="text" name="sts" id='reg' oninput='checkReg()' placeholder="SST" />
 			            <span style='color:green' id='ok'></span>
                     	<span style='color:red' id='notok'></span>
+                </div> -->
+
+                <div class="m-2 w-full">
+                    <x-label value="Reg no" />
+                    <x-input type="text" name="reg" id='reg' oninput='checkReg()' placeholder="Reg No" />
+                    <span style='color:green' id='ok'></span>
+                    <span style='color:red' id='notok'></span>
                 </div>
+
                 <div class="m-2 w-full">
                     <x-label value="Student Name" />
                     <x-input type="text" placeholder="First Name"
@@ -32,7 +40,7 @@
                 <div class="m-2 w-full">
                     <x-label value="City" />
                     <select name="city" id="city" class="w-full">
-                        <option value="">--</option>
+                        <option value="">Select City</option>
                         @foreach ($districts as $district)
                             <option value="{{ $district->id }}">{{ $district->name }}</option>
                         @endforeach
@@ -153,7 +161,8 @@
     
                 <div class="m-2 w-full ">
                     <x-label value="Sub Caste" />
-                    <select name="subc" id="subc" class="w-full"></select>
+                    <select name="subc" id="subc" class="w-full">
+                    </select>
                 </div>
     
                 <div class="m-2 w-full">
@@ -182,7 +191,9 @@
             <div class="flex justify-around">
                 <div class="m-2 w-full">
                     <x-label value="District" />
-                    <select name="district" id="district" class="w-full"> </select>
+                    <select name="district" id="district" class="w-full">
+                        <option value="">--</option>
+                    </select>
                 </div>
     
                 <div class="m-2 w-full">
@@ -210,7 +221,9 @@
             <div class="flex justify-around">
                 <div class="m-2 w-full">
                     <x-label value="Taluk" />
-                    <select name="taluk" id="taluk" class="w-full"> </select>
+                    <select name="taluk" id="taluk" class="w-full">
+                        <option value="">--</option>
+                    </select>
                 </div>
     
                 <div class="m-2 w-full">
@@ -235,6 +248,16 @@
 </x-main-card>
 
 <script>
+
+    enableTransliteration($("input[name='fname']")[0], 'kn')
+    enableTransliteration($("input[name='father']")[0], 'kn')
+    enableTransliteration($("input[name='mname']")[0], 'kn')
+    enableTransliteration($("input[name='surname']")[0], 'kn')
+    enableTransliteration($("input[name='birthPlace']")[0], 'kn')
+    enableTransliteration($("input[name='religion']")[0], 'kn')
+    enableTransliteration($("input[name='prevSchool']")[0], 'kn')
+    enableTransliteration($("#address")[0], 'kn')
+    
     $("#editStd").select2();
     $("#class").select2();
     $("#city").select2();
@@ -277,11 +300,13 @@
                 // dists = [{"id":1, "text":"sdfdsf"}];
                 $("#district").html("")
                 $("#district").append(`<option value="">--</option>`)
-                data.forEach(district => {
+                for (let i = 0; i < data.length; i++) {
                     $("#district").append(
-                         `<option value="${district.id}"> ${district.text} </option>`
+                        `
+                        <option value="${data[i].id}"> ${data[i].text} </option>
+                        `
                     )
-                });
+                }
             },
         });
     }
@@ -296,11 +321,12 @@
             success: function(data) {
                 $("#taluk").html("")
                 $("#taluk").append(`<option value="">--</option>`)
-                data.forEach(taluk => {
+                for (let i = 0; i < data.length; i++) {
                     $("#taluk").append(
-                         `<option value="${taluk.id}"> ${taluk.text} </option>`
+                        `
+                        <option value="${data[i].id}"> ${data[i].text} </option>`
                     )
-                });
+                }
             },
         });
     }
@@ -313,16 +339,14 @@
                 cast: id
             },
             success: function(res) {
-               
+                $('#cat').val(res.cats[0].cat).trigger('change')
                 let subs = res.subcasts;
                 $("#subc").html("")
-                $("#subc").append(`<option value="">--</option>`)
-                subs.forEach(sub => {
+                for (let i = 0; i < subs.length; i++) {
                     $("#subc").append(
-                        `<option value="${sub.id}"> ${sub.name} </option>`
-                    )  
-                });
-               $('#cat').val(res.cats[0].cat).trigger('change')
+                        `<option value="${subs[i].id}"> ${subs[i].name} </option>`
+                    )
+                }
             },
         });
     }
@@ -334,7 +358,6 @@
                 57))
             return false;
     });
-
  function checkReg() {
         let reg = $('#reg').val();
 	reg = reg.trim()
@@ -356,7 +379,7 @@
                 $('#notok').text('')
                 $('#ok').text('')
                 if(res.status == 200)
-                    $('#notok').text('STS No Already Exist: ' + res.info)
+                    $('#notok').text('Reg No Already Exist: ' + res.info)
                 else
                     $('#ok').text('OK')
             }
