@@ -7,7 +7,7 @@
         <div id="google_translate_element"></div>
 
        <div>
-        Registration No: <b>{{$id}}</b>
+        {{-- Registration No: <b>{{$id}}</b> --}}
        </div>
     </div>
     New Admission
