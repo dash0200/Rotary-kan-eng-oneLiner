@@ -12,6 +12,7 @@ class AdmissionModel extends Model
     
     protected $dates = ['deleted_at','date_of_adm', 'dob'];
     protected $table = 'admission';
+    protected $primaryKey = 'reg';
     protected $fillable = [
         'id',
         'reg',

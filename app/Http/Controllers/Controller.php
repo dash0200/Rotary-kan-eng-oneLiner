@@ -107,7 +107,7 @@ class Controller extends BaseController
 
     public function getAdmStd(Request $req)
     {
-        $student = AdmissionModel::where("id", $req->id)->withTrashed()->first();
+        $student = AdmissionModel::where("reg", $req->id)->withTrashed()->first();
         $student["doy"] = $student->date_of_adm->format("Y-m-d");
         $student["dobf"] = $student->dob->format("Y-m-d");
 
