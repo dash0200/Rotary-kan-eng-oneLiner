@@ -144,7 +144,7 @@ class TransactionController extends Controller
     public function getByID(Request $req) {
         $id = $req->id;
 
-        $std = AdmissionModel::where("id", 'LIKE', '%'.$id.'%')->withTrashed()->first();
+        $std = AdmissionModel::where("reg", 'LIKE', '%'.$id.'%')->withTrashed()->first();
         
         if($std == null) return response()->json([]);
 
