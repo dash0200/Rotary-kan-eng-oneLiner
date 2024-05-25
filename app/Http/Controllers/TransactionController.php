@@ -125,7 +125,7 @@ class TransactionController extends Controller
             "prev_school" => strtolower($req->prevSchool),
         ];
         if(isset($req->id)) {
-            AdmissionModel::where("reg", $req->id)->update($data);
+            AdmissionModel::where("id", $req->id)->update($data);
         } else {
             AdmissionModel::create($data);
         }
@@ -144,15 +144,19 @@ class TransactionController extends Controller
     public function getByID(Request $req) {
         $id = $req->id;
 
-        $std = AdmissionModel::where("reg", 'LIKE', '%'.$id.'%')->withTrashed()->first();
+        $std = AdmissionModel::where("id", 'LIKE', '%'.$id.'%')->withTrashed()->first();
+        
+        if($std == null) return response()->json([]);
 
-        $std['exist'] = LCModel::where("student", $std->id)->first();
-        $std['exist'] = $std['exist'] == null ? "" : 1;
+        if (!isset($req->getStudent)) {
+            $std['exist'] = LCModel::where("student", $std->id)->first();
+            $std['exist'] = $std['exist'] == null ? "" : 1;
+        }
 
-        $std['dob1'] = $std["dob"]->format("d-m-Y");
-
+        $std['dob1'] = $std?->dob?->format("d-m-Y");
+        
         $std['ide'] = Crypt::encryptString($std->id);
-
+        
         return response()->json($std);
     } 
 
@@ -183,9 +187,9 @@ class TransactionController extends Controller
 
     public function editStudent( Request $req) {
 
-        $std = AdmissionModel::where("reg", $req->id)->withTrashed()->first();
+        $std = AdmissionModel::where("id", $req->id)->withTrashed()->first();
 
-        if($std->district !== null) {
+        if($std?->district !== null) {
             $std['state'] = $std->district->state->state;
             $std['dist'] = $std->district->district;
         }
@@ -385,13 +389,13 @@ class TransactionController extends Controller
         // $lc = null;
         // if( LCModel::where("student", $req->id)->first() == null ) {
         //     $lc = LCModel::create($data);
-        //     AdmissionModel::where("reg", $req->id)->delete();
+        //     AdmissionModel::where("id", $req->id)->delete();
         // } else {
         //     $lc = LCModel::where("student", $req->id)->update($data);
         // }
 
         $lc = LCModel::create($data);
-        AdmissionModel::where("reg", $req->id)->delete();
+        AdmissionModel::where("id", $req->id)->delete();
 
         $id = Crypt::encryptString($lc->student);
         return response()->json(["lc" => $id]);

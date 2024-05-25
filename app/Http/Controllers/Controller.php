@@ -107,7 +107,7 @@ class Controller extends BaseController
 
     public function getAdmStd(Request $req)
     {
-        $student = AdmissionModel::where("reg", $req->id)->withTrashed()->first();
+        $student = AdmissionModel::where("id", $req->id)->withTrashed()->first();
         $student["doy"] = $student->date_of_adm->format("Y-m-d");
         $student["dobf"] = $student->dob->format("Y-m-d");
 
@@ -668,7 +668,7 @@ class Controller extends BaseController
     }
 
     public function checkReg(Request $req){
-        $exist = AdmissionModel::where('reg', $req->sts)->first();
+        $exist = AdmissionModel::where('id', $req->sts)->first();
 
         if($exist){
             return response()->json(['status'=>200, 'info' => $exist->name.' '.$exist->fname.' '.$exist->lname]);

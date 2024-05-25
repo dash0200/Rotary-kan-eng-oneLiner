@@ -95,7 +95,7 @@
     function getById() {
         $.ajax({
             type: "get",
-            url: "{{route('trans.getByID')}}",
+            url: "{{route('trans.getByID', ['getStudent' => 1])}}",
             data: {
                 id: $("#id").val(),
             },
