@@ -554,7 +554,6 @@ class TransactionController extends Controller
         if($req->dob == null) {
             $stds = AdmissionModel::withTrashed()->where("name", 'LIKE', '%'.strtolower($req->name).'%',)
             ->get();
-            dd($stds);
                 foreach($stds as $std) {
                     $std['dob1'] = $std["dob"]->format("d-m-Y");
                 }
