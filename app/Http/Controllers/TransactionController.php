@@ -575,4 +575,18 @@ class TransactionController extends Controller
         $stds = AdmissionModel::where("date_of_adm", "LIKE", '%'.'2022'.'%')->where('class', 2)->get();
         dd($stds);
     }
+
+    public function getByNameLnameDob(Request $req) {
+
+        $stds = AdmissionModel::withTrashed()->where("name",  'LIKE', '%'.$req->name.'%')
+        ->where("lname",  'LIKE', '%'.$req->lname.'%')
+        ->where("dob",  'LIKE', '%'.$req->dob.'%')
+        ->limit(10)->get();
+        foreach($stds as $std) {
+            $std['dob1'] = $std["dob"]->format("d-m-Y");
+            $std['exist'] = LCModel::where("student", $std->id)->first();
+            $std['exist'] = $std['exist'] == null ? "" : 1;
+        }
+        return response()->json($stds);        
+    } 
 }
